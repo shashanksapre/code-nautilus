@@ -5,7 +5,7 @@ This repo provides a visual studio code extension for Nautilus.
 ## Install Extension
 
 ```
-wget -qO- https://raw.githubusercontent.com/shashank-sapre/code-nautilus/codium/install.sh | bash
+wget -qO- https://raw.githubusercontent.com/shashanksapre/code-nautilus/codium/install.sh | bash
 ```
 
 ## Uninstall Extension

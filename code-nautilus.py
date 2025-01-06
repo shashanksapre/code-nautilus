@@ -11,9 +11,11 @@ import os
 
 # path to vscode
 VSCODE = 'code'
+VSCODIUM = 'codium' # adding codium path
 
 # what name do you want to see in the context menu?
 VSCODENAME = 'Code'
+VSCODIUMNAME = 'Codium' # adding codium name
 
 # always create new window?
 NEWWINDOW = False
@@ -39,24 +41,59 @@ class VSCodeExtension(GObject.GObject, Nautilus.MenuProvider):
 
         call(VSCODE + ' ' + args + safepaths + '&', shell=True)
 
+    # adding codium function
+    def launch_vscodium(self, menu, files):
+        safepaths = ''
+        args = ''
+
+        for file in files:
+            filepath = file.get_location().get_path()
+            safepaths += '"' + filepath + '" '
+
+            # If one of the files we are trying to open is a folder
+            # create a new instance of vscode
+            if os.path.isdir(filepath) and os.path.exists(filepath):
+                args = '--new-window '
+
+        if NEWWINDOW:
+            args = '--new-window '
+
+        call(VSCODIUM + ' ' + args + safepaths + '&', shell=True)
+
     def get_file_items(self, *args):
         files = args[-1]
-        item = Nautilus.MenuItem(
+        item1 = Nautilus.MenuItem(
             name='VSCodeOpen',
             label='Open in ' + VSCODENAME,
             tip='Opens the selected files with VSCode'
         )
-        item.connect('activate', self.launch_vscode, files)
+        item1.connect('activate', self.launch_vscode, files)
 
-        return [item]
+        # add codium context menu
+        item2 = Nautilus.MenuItem(
+            name='VSCodiumOpen',
+            label='Open in ' + VSCODIUMNAME,
+            tip='Opens the selected files with VSCodium'
+        )
+        item2.connect('activate', self.launch_vscodium, files)
+
+        return [item1, item2]
 
     def get_background_items(self, *args):
         file_ = args[-1]
-        item = Nautilus.MenuItem(
+        item1 = Nautilus.MenuItem(
             name='VSCodeOpenBackground',
             label='Open in ' + VSCODENAME,
             tip='Opens the current directory in VSCode'
         )
-        item.connect('activate', self.launch_vscode, [file_])
+        item1.connect('activate', self.launch_vscode, [file_])
 
-        return [item]
+        # add codium context menu
+        item2 = Nautilus.MenuItem(
+            name='VSCodiumOpenBackground',
+            label='Open in ' + VSCODIUMNAME,
+            tip='Opens the current directory in VSCodium'
+        )
+        item2.connect('activate', self.launch_vscodium, [file_])
+
+        return [item1, item2]
